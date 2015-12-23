@@ -10,7 +10,7 @@ The module exposes a single function.
 
 ## stem
 
- Removes a words suffixes to get the words stem. 
+The stem-function takes a word and returns its stem. 
 
     stem "sky" == "sky"
-    stem "hopefulness" == "stem"
+    stem "hopefulness" == "hope"
