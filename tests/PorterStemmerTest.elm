@@ -1,6 +1,5 @@
 module PorterStemmerTest where
 
-import String
 import Graphics.Element exposing (Element)
 import PorterStemmer exposing (stem)
 

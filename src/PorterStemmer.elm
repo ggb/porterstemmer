@@ -1,4 +1,4 @@
-module TextQuery.PorterStemmer (stem) where
+module PorterStemmer (stem) where
 
 {-| Elm implementation of the classical Porter Stemming-algorithm. The algorithm
 is described in [this paper](http://tartarus.org/martin/PorterStemmer/def.txt) 
@@ -13,7 +13,6 @@ The module exposes a single function.
 
 import String
 import Regex exposing (..)
-import Array exposing (Array)
 
 
 -- consonant
@@ -264,10 +263,10 @@ steps : String -> String
 steps = step1 >> step2 >> step3 >> step4 >> step5
 
 
-{-| Removes a words suffixes to get the words stem. 
+{-| The stem-function takes a word and returns its stem. 
 
     stem "sky" == "sky"
-    stem "hopefulness" == "stem"
+    stem "hopefulness" == "hope"
 -}
 stem : String -> String
 stem word =
