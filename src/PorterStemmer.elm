@@ -1,9 +1,9 @@
-module PorterStemmer (stem) where
+module PorterStemmer exposing (stem)
 
 {-| Elm implementation of the classical Porter Stemming-algorithm. The algorithm
-is described in [this paper](http://tartarus.org/martin/PorterStemmer/def.txt) 
-and on [Wikipedia](https://en.wikipedia.org/wiki/Stemming). 
-The implementation is inspired by the [JavaScript](http://tartarus.org/martin/PorterStemmer/js.txt)- 
+is described in [this paper](http://tartarus.org/martin/PorterStemmer/def.txt)
+and on [Wikipedia](https://en.wikipedia.org/wiki/Stemming).
+The implementation is inspired by the [JavaScript](http://tartarus.org/martin/PorterStemmer/js.txt)-
 and the [Haskell](http://tartarus.org/martin/PorterStemmer/haskell.txt)-implementation.
 
 The module exposes a single function.
@@ -64,7 +64,7 @@ step2list =
   , ("aliti",   "al"  )
   , ("iviti",   "ive" )
   , ("biliti",  "ble" )
-  , ("logi",    "log" ) 
+  , ("logi",    "log" )
   ]
 
 
@@ -76,9 +76,9 @@ step3list =
   , ("iciti", "ic")
   , ("ical" , "ic")
   , ("ful"  , ""  )
-  , ("ness" , ""  ) 
+  , ("ness" , ""  )
   ]
-  
+
 
 step4list : List (String, String)
 step4list =
@@ -114,9 +114,9 @@ capture match =
 
 submatchHelper : Regex -> String -> String
 submatchHelper re word =
-  find All re word 
-  |> List.head 
-  |> Maybe.map .submatches 
+  find All re word
+  |> List.head
+  |> Maybe.map .submatches
   |> Maybe.withDefault []
   |> List.head
   |> Maybe.withDefault (Just "")
@@ -156,7 +156,7 @@ step1b'' re word =
             stem
     else
       word
-   
+
 
 step1b' : Regex -> String -> String
 step1b' re word =
@@ -182,7 +182,7 @@ step1b word =
 
 
 step1c : String -> String
-step1c word = 
+step1c word =
   let re = regex "^(.+?)y$"
   in
     if contains re word
@@ -203,10 +203,10 @@ step1 = step1a >> step1b >> step1c
 
 step2and3and4 : Regex -> List (String, String) -> String -> String
 step2and3and4 measure list word =
-  let (from, to) = 
+  let (from, to) =
         list
-        |> List.filter (\(from, _) -> String.endsWith from word)  
-        |> List.head 
+        |> List.filter (\(from, _) -> String.endsWith from word)
+        |> List.head
         |> Maybe.withDefault ("","")
       stem = replace All (regex from) (\_ -> "") word
   in
@@ -214,7 +214,7 @@ step2and3and4 measure list word =
       then replace All (regex from) (\_ -> to) word
     else
       word
-      
+
 
 step2 : String -> String
 step2 = step2and3and4 mgr0 step2list
@@ -237,8 +237,8 @@ step5a word =
       then
         let stem = submatchHelper re word
             re2 = regex ("^" ++ c' ++ v ++ "[^aeiouwxy]$")
-        in 
-          if contains mgr1 stem || 
+        in
+          if contains mgr1 stem ||
               (contains meq1 stem && (contains re2 stem |> not))
             then stem
           else
@@ -263,7 +263,7 @@ steps : String -> String
 steps = step1 >> step2 >> step3 >> step4 >> step5
 
 
-{-| The stem-function takes a word and returns its stem. 
+{-| The stem-function takes a word and returns its stem.
 
     stem "sky" == "sky"
     stem "hopefulness" == "hope"
@@ -273,10 +273,10 @@ stem word =
   if String.length word < 3
     then word
   else if String.startsWith "y" word
-    then 
-      "Y" ++ (String.dropLeft 1 word) 
-      |> steps 
-      |> String.dropLeft 1 
-      |> (++) "y" 
+    then
+      "Y" ++ (String.dropLeft 1 word)
+      |> steps
+      |> String.dropLeft 1
+      |> (++) "y"
   else
     steps word

@@ -1,9 +1,9 @@
-module PorterStemmerTest where
+module PorterStemmerTest exposing (..)
 
-import Graphics.Element exposing (Element)
-import PorterStemmer exposing (stem)
-
+import Html exposing(..)
 import ElmTest exposing (..)
+import String
+import PorterStemmer exposing (stem)
 
 
 tests : Test
@@ -87,13 +87,25 @@ tests =
     , defaultTest (assertEqual (stem "knopp") "knopp")
     , defaultTest (assertEqual (stem "knot") "knot")
     , defaultTest (assertEqual (stem "knots") "knot")
-    -- 
+    --
     , defaultTest (assertEqual (stem "lay") "lai")
     , defaultTest (assertEqual (stem "try") "try")
     , defaultTest (assertEqual (stem "sky") "sky")
     , defaultTest (assertEqual (stem "happy") "happi")
     ]
 
-main : Element
-main = 
-    elementRunner tests
+
+line : String -> Html String
+line s =
+  div [ ] [
+    text s,
+    br [ ] [ ]
+  ]
+
+
+main : Html String
+main =
+  let
+    lines = tests |> stringRunner |> String.lines
+  in
+    div [ ] (List.map (\s -> line s) lines)
