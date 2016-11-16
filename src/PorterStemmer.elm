@@ -22,24 +22,24 @@ c = "[^aeiou]"
 v : String
 v = "[aeiouy]"
 -- consonant sequence
-c' : String
-c' = c ++ "[^aeiouy]*"
+c_ : String
+c_ = c ++ "[^aeiouy]*"
 -- vowel sequence
-v' : String
-v' = v ++ "[aeiou]*"
+v_ : String
+v_ = v ++ "[aeiou]*"
 
 -- [C]VC... is m > 0
 mgr0 : Regex
-mgr0 = regex ("^(" ++ c' ++ ")?" ++ v' ++ c')
+mgr0 = regex ("^(" ++ c_ ++ ")?" ++ v_ ++ c_)
 -- [C]VC[V] is m=1
 meq1 : Regex
-meq1 = regex ("^(" ++ c' ++ ")?" ++ v' ++ c' ++ "(" ++ v' ++ ")?$")
+meq1 = regex ("^(" ++ c_ ++ ")?" ++ v_ ++ c_ ++ "(" ++ v_ ++ ")?$")
 -- [C]VCVC... is m>1
 mgr1 : Regex
-mgr1 = regex ("^(" ++ c' ++ ")?" ++ v' ++ c' ++ v' ++ c')
+mgr1 = regex ("^(" ++ c_ ++ ")?" ++ v_ ++ c_ ++ v_ ++ c_)
 -- vowel in stem
 s_v : Regex
-s_v = regex ("^(" ++ c' ++ ")?" ++ v)
+s_v = regex ("^(" ++ c_ ++ ")?" ++ v)
 
 
 step2list : List (String, String)
@@ -136,15 +136,15 @@ step1a word =
       word
 
 
-step1b'' : Regex -> String -> String
-step1b'' re word =
+step1b2 : Regex -> String -> String
+step1b2 re word =
   let stem = submatchHelper re word
   in
     if contains s_v stem
       then
         let re2 = regex "(at|bl|iz)$"
             re3 = regex "([^aeiouylsz])\\1$"
-            re4 = regex ("^" ++ c' ++ v ++ "[^aeiouwxy]$")
+            re4 = regex ("^" ++ c_ ++ v ++ "[^aeiouwxy]$")
         in
           if contains re2 stem
             then stem ++ "e"
@@ -158,8 +158,8 @@ step1b'' re word =
       word
 
 
-step1b' : Regex -> String -> String
-step1b' re word =
+step1b_ : Regex -> String -> String
+step1b_ re word =
   let fp = submatchHelper re word
   in
     if contains mgr0 fp
@@ -174,9 +174,9 @@ step1b word =
       re2 = regex "^(.+?)(ed|ing)$"
   in
     if contains re word
-      then step1b' re word
+      then step1b_ re word
     else if contains re2 word
-      then step1b'' re2 word
+      then step1b2 re2 word
     else
       word
 
@@ -236,7 +236,7 @@ step5a word =
     if contains re word
       then
         let stem = submatchHelper re word
-            re2 = regex ("^" ++ c' ++ v ++ "[^aeiouwxy]$")
+            re2 = regex ("^" ++ c_ ++ v ++ "[^aeiouwxy]$")
         in
           if contains mgr1 stem ||
               (contains meq1 stem && (contains re2 stem |> not))
