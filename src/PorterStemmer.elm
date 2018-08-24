@@ -15,6 +15,12 @@ import String
 import Regex exposing (..)
 
 
+
+regex : String -> Regex
+regex str =
+  Maybe.withDefault Regex.never <|
+    Regex.fromString str 
+
 -- consonant
 c : String
 c = "[^aeiou]"
@@ -114,7 +120,7 @@ capture match =
 
 submatchHelper : Regex -> String -> String
 submatchHelper re word =
-  find All re word
+  find re word
   |> List.head
   |> Maybe.map .submatches
   |> Maybe.withDefault []
@@ -129,31 +135,31 @@ step1a word =
       re2 = regex "^(.+?)([^s])s$"
   in
     if contains re word
-      then replace All re capture word
+      then replace re capture word
     else if contains re2 word
-      then replace All re2 capture word
+      then replace re2 capture word
     else
       word
 
 
 step1b2 : Regex -> String -> String
 step1b2 re word =
-  let stem = submatchHelper re word
+  let stemi = submatchHelper re word
   in
-    if contains s_v stem
+    if contains s_v stemi
       then
         let re2 = regex "(at|bl|iz)$"
             re3 = regex "([^aeiouylsz])\\1$"
             re4 = regex ("^" ++ c_ ++ v ++ "[^aeiouwxy]$")
         in
-          if contains re2 stem
-            then stem ++ "e"
-          else if contains re3 stem
-            then replace All (regex ".$") (\_ -> "") stem
-          else if contains re4 stem
-            then stem ++ "e"
+          if contains re2 stemi
+            then stemi ++ "e"
+          else if contains re3 stemi
+            then replace (regex ".$") (\_ -> "") stemi
+          else if contains re4 stemi
+            then stemi ++ "e"
           else
-            stem
+            stemi
     else
       word
 
@@ -163,7 +169,7 @@ step1b_ re word =
   let fp = submatchHelper re word
   in
     if contains mgr0 fp
-      then replace All (regex ".$") (\_ -> "") word
+      then replace (regex ".$") (\_ -> "") word
     else
       word
 
@@ -187,10 +193,10 @@ step1c word =
   in
     if contains re word
       then
-        let stem = submatchHelper re word
+        let stemi = submatchHelper re word
         in
-          if contains s_v stem
-            then stem ++ "i"
+          if contains s_v stemi
+            then stemi ++ "i"
           else
             word
     else
@@ -205,13 +211,13 @@ step2and3and4 : Regex -> List (String, String) -> String -> String
 step2and3and4 measure list word =
   let (from, to) =
         list
-        |> List.filter (\(from, _) -> String.endsWith from word)
+        |> List.filter (\(from2, _) -> String.endsWith from2 word)
         |> List.head
         |> Maybe.withDefault ("","")
-      stem = replace All (regex from) (\_ -> "") word
+      stemi = replace (regex from) (\_ -> "") word
   in
-    if contains measure stem
-      then replace All (regex from) (\_ -> to) word
+    if contains measure stemi
+      then replace (regex from) (\_ -> to) word
     else
       word
 
@@ -231,16 +237,16 @@ step4 = step2and3and4 mgr1 step4list
 step5a : String -> String
 step5a word =
   let re = regex "^(.+?)e$"
-      test = find All re word
+      test = find re word
   in
     if contains re word
       then
-        let stem = submatchHelper re word
+        let stemi = submatchHelper re word
             re2 = regex ("^" ++ c_ ++ v ++ "[^aeiouwxy]$")
         in
-          if contains mgr1 stem ||
-              (contains meq1 stem && (contains re2 stem |> not))
-            then stem
+          if contains mgr1 stemi ||
+              (contains meq1 stemi && (contains re2 stemi |> not))
+            then stemi
           else
             word
     else
@@ -250,7 +256,7 @@ step5a word =
 step5b : String -> String
 step5b word =
   if contains (regex "ll$") word && contains mgr1 word
-    then replace All (regex ".$") (\_ -> "") word
+    then replace (regex ".$") (\_ -> "") word
   else
     word
 

@@ -6,7 +6,7 @@ import PorterStemmer exposing (..)
 
 
 testHelper i (result, expected) = 
-    test ("Test " ++ toString i) <|
+    test ("Test " ++ Debug.toString i) <|
         \() ->
             Expect.equal result expected
 
